@@ -1,0 +1,20 @@
+{
+    "name":             "arkhaios",
+    "version":          "0.0.1",
+    "description":      "Website for managing a store, see the readme",
+    "main":             "server.js",
+    "scripts": {
+        "test":         "mocha"
+    },
+    "dependencies": {
+        "wrench":       "",
+        "moment":       "",
+        "express":      "",
+        "mongodb":      "",
+        "serial":       "",
+        "imagemagick":  ""
+    },
+    "repository":       "",
+    "author":           "Nicolas Herment <nherment@gmail.com>",
+    "license":          "MIT License"
+}

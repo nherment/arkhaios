@@ -1,0 +1,63 @@
+html {
+    overflow-y: scroll;
+}
+
+body {
+    margin: 0 auto;
+    padding: 0;
+    color: #666666;
+    font-family: "Proxima Nova",Helvetica,Arial,Verdana,sans-serif;
+}
+
+a {
+    color: #666666;
+    text-decoration: underline;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    background: url('../img/ajax-loader.gif') no-repeat;
+}
+
+div.picrow {
+    border: 0px solid #000;
+}
+
+div#picstest {
+    visibility : hidden;
+    width:100%;
+}
+
+img.photo { cursor: pointer; }
+
+ul.images-edition {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+ul.images-edition > li {
+
+}
+
+ul.images-edition > li > div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+li img {
+    float: left;
+    margin: 0 15px 0 0;
+}
+
+li {
+    padding: 10px;
+    overflow: auto;
+}
+
+li:hover {
+    background: #eee;
+}

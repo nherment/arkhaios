@@ -1,0 +1,34 @@
+
+<div class="row">
+    <div class="span12">
+        <form action="/api/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="images" multiple/>
+            <input type="submit"/>
+        </form>
+    </div>
+</div>
+<h2>Your Images</h2>
+<div>
+    <ul class="images-edition">
+        <li ng-repeat="imageInfo in imagesInfos" ng-cloak>
+            <div>
+                <a href="/api/image/{{imageInfo.uid}}">
+                    <img
+                        height="100"
+                        ng-src="/api/image/{{imageInfo.uid}}?height=100&width=100"
+                        />
+                </a>
+            </div>
+            <div>
+                <form action="/api/image/{{imageInfo.uid}}" method="post">
+                    <input type="text" name="name" value="{{imageInfo.name}}"/>
+                    <input tags-input class="tagsInput" name="tags" id="tags_{{imageInfo.uid}}" value="" />
+                    <input type="submit" value="save" class="btn" />
+                </form>
+            </div>
+        </li>
+    </ul>
+    <a href="{{prevUrl}}" ng-show="currentPage > 1">< previous</a>
+    ({{currentPage}} / {{numberOfPages()}})
+    <a href="{{nextUrl}}" ng-show="currentPage < numberOfPages()">next ></a>
+</div>
