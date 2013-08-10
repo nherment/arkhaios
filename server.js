@@ -44,7 +44,10 @@ app.get("/admin", function(req, res) {
 
 app.post("/api/upload", function(req, res) {
 
-    console.log(JSON.stringify(req.files, null, 2))
+    if(process.env.ARKHAIOS_READ_ONLY) {
+        res.send({"reason": "uploads have been disabled"}, 403)
+        return;
+    }
 
     if(req.files) {
         if(_.isArray(req.files.images)) {
@@ -150,7 +153,10 @@ app.get("/api/info/:uid", function(req, res) {
 
 app.post("/api/image/:uid", function(req, res) {
 
-    console.log(JSON.stringify(req.body))
+    if(process.env.ARKHAIOS_READ_ONLY) {
+        res.send({"reason": "image edition has been disabled"}, 403)
+        return;
+    }
 
     DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
         if(err) {
