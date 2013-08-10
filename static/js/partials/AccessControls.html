@@ -1,0 +1,27 @@
+
+<div class="row">
+    <div class="span12">
+        <form action="/api/acl" method="post">
+            <input type="text" name="name" id="name_new" value="" style="display:inline" placeHolder="name"/>
+            <input tags-input class="tagsInput" name="tags" id="tags_new" value=""  style="display:inline"/>
+            <input type="submit" value="save" class="btn" style="display:inline" />
+        </form>
+    </div>
+</div>
+<h2>Access Controls</h2>
+<div>
+    <ul class="images-edition">
+        <li ng-repeat="acl in acls" ng-cloak>
+            <div>
+                <h3>{{acl.name}}</h3>
+                <p>http://localhost:3000/auth/{{acl.uid}}</p>
+            </div>
+            <div>
+                <form action="/api/acl/{{acl.uid}}" method="post">
+                    <input tags-input class="tagsInput" name="tags" id="tags_{{acl.uid}}" value="{{acl.tags.join(',')}}" />
+                    <input type="submit" value="save" class="btn" style="display:inline" />
+                </form>
+            </div>
+        </li>
+    </ul>
+</div>

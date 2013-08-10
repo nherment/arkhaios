@@ -56,3 +56,18 @@ imageManagement.directive('tagsInput', function ($timeout) {
         }
     };
 });
+
+
+
+imageManagement.controller('AccessControlCtrl',
+    function AppCtrl ($scope, $http) {
+        $scope.loading = true;
+
+        $http({method: 'GET', url: '/api/acl/list'}).success(function(data, status, headers, config) {
+                $scope.acls = data;
+                $scope.loading = false;
+                $scope.$broadcast('dataLoaded');
+        })
+
+    }
+)

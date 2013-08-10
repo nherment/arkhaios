@@ -7,6 +7,10 @@ var imageManagement = angular.module('imageManagement', [])
             templateUrl: 'js/partials/imageInfoList.html',
             controller: 'ListCtrl'
         })
+        .when('/acl', {
+            templateUrl: 'js/partials/AccessControls.html',
+            controller: 'AccessControlCtrl'
+        })
         .when('/login', {
             templateUrl: 'js/partials/login.html',
             controller: 'LoginCtrl'

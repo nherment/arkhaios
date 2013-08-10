@@ -6,6 +6,7 @@ var DBHelper        = require("./lib/db/DBHelper.js").DBHelper
 var gm              = require("gm")
 var im              = require("imagemagick")
 var SerialRunner    = require("serial").SerialRunner
+var uuid            = require("uuid")
 //var passport        = require('passport')
 //var LocalStrategy   = require('passport-local').Strategy;
 
@@ -15,7 +16,8 @@ var app = express()
 
 app.use(express.static(__dirname + '/static'))
 app.use(express.cookieParser("Arkhaios photography is gr34t"))
-app.use(express.cookieSession({secret: "Arkhaios photography is gr34t"}))
+//app.use(express.cookieSession({secret: "Arkhaios photography is gr34t"}))
+app.use(express.session({secret: "Arkhaios photography is gr34t"}))
 app.use(express.bodyParser())
 
 
@@ -39,14 +41,157 @@ app.get("/", function(req, res) {
 })
 
 app.get("/admin", function(req, res) {
-    res.sendfile(__dirname + "/static/admin.html")
+    if(req.session.admin) {
+        res.sendfile(__dirname + "/static/admin.html")
+    } else {
+        res.redirect("/login")
+    }
+})
+
+app.get("/login", function(req, res) {
+    res.sendfile(__dirname + "/static/login.html")
+})
+
+app.get("/admin/test", function(req, res) {
+    res.send({
+        admin: req.session.admin,
+        tags: req.session.tags
+    })
+})
+
+app.post("/login", function(req, res) {
+
+    var password = req.param("password")
+
+    DBHelper.Config.findByKey("admin", {}, function(err, admin) {
+        if(err) {
+            res.send(err, 400)
+        } else if(admin) {
+
+            if(admin.password === password) {
+                req.session.admin = true
+                res.redirect("/admin")
+            } else {
+                req.session.admin = false
+                res.send({reason: "wrong password"}, 403)
+            }
+
+        } else {
+
+            admin = {
+                key: "admin",
+                password: password
+            }
+
+            DBHelper.Config.save(admin, function(err, admin) {
+                if(err) {
+                    res.send(err, 400)
+                } else {
+                    logger.info("First login. Administrator password created")
+                    res.redirect("/admin")
+                }
+            })
+        }
+    })
+})
+
+app.get("/logout", function(req, res) {
+    req.session.destroy()
+    res.redirect("/")
+})
+
+
+app.get("/auth/:aclUid", function(req, res) {
+    var uid = req.param("aclUid")
+    if(uid) {
+        DBHelper.ACL.findByKey(
+            uid,
+            {},
+            function(err, acl) {
+
+                if(err) {
+                    logger.error(err)
+                    res.send(err, 400)
+                } else if(acl) {
+
+                    logger.info("Authenticated with ACL ["+uid+"]. Access to tags ["+JSON.stringify(acl.tags)+"]")
+
+                    req.session.tags = acl.tags
+
+                    res.redirect("/")
+                } else {
+                    logger.warn("Could not find requested ACL ["+uid+"]")
+                    res.redirect("/")
+                }
+
+            }
+        )
+    }
+})
+
+app.post("/api/acl", function(req, res) {
+
+    if(process.env.ARKHAIOS_READ_ONLY) {
+        res.send({"reason": "Creating a new ACL has been disabled"}, 403)
+        return
+    }
+
+    var acl = {
+        uid: uuid.v4(),
+        name: req.param("name"),
+        tags: req.param("tags") ? req.param("tags").split(",") : []
+    }
+
+    DBHelper.ACL.save(acl, function(err, savedAcl) {
+
+        if(err) {
+            logger.error(err)
+            res.send(err, 400)
+        } else {
+            res.redirect("/admin")
+        }
+
+    })
+
+})
+
+
+app.get("/api/acl/list", function(req, res) {
+
+    var from = req.param("from")
+    var to = req.param("to")
+
+    DBHelper.ACL.find(
+        {},
+        {
+            _id: 0,
+            uid: 1,
+            name: 1,
+            tags: 1
+        },
+        {
+            sort:   [["name", "asc"]]
+//            limit:  (to-from),
+//            skip:   from
+        },
+        function(err, acls) {
+
+            if(err) {
+                res.send(err, 400)
+            } else {
+                res.send(acls)
+            }
+
+        }
+    )
+
 })
 
 app.post("/api/upload", function(req, res) {
 
-    if(process.env.ARKHAIOS_READ_ONLY) {
-        res.send({"reason": "uploads have been disabled"}, 403)
-        return;
+    if(!req.session.admin) {
+        res.send({reason: "login required"}, 401)
+        return
     }
 
     if(req.files) {
@@ -85,7 +230,8 @@ app.post("/api/upload", function(req, res) {
 
         }
     } else {
-        res.send("missing files to upload", 400)
+
+        res.send({ "reason": "missing files to upload" }, 400)
 
     }
 
@@ -107,8 +253,24 @@ app.get("/api/list/:tag/:from/:to", function(req, res) {
     var from = req.param("from")
     var to = req.param("to")
 
+    var accessibleTags = req.session.tags;
+
+    if(!accessibleTags) {
+        accessibleTags = []
+    }
+
+    if(accessibleTags.indexOf("Public") === -1) {
+        accessibleTags.push("Public")
+    }
+
+    var query = {tags: {"$in": accessibleTags}}
+
+    if(req.session.admin) { // admin has access to everything
+        query = {}
+    }
+
     DBHelper.Image.find(
-        {},
+        query,
         {
             _id: 0,
             uid: 1,
@@ -138,7 +300,7 @@ app.get("/api/list/:tag/:from/:to", function(req, res) {
 
 app.get("/api/info/:uid", function(req, res) {
 
-    DBHelper.Image.findByKey(req.params.uid, {}, function(err, imageInfo) {
+    DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
         if(err) {
             logger.error(err)
             res.send(err, 400)
@@ -153,9 +315,9 @@ app.get("/api/info/:uid", function(req, res) {
 
 app.post("/api/image/:uid", function(req, res) {
 
-    if(process.env.ARKHAIOS_READ_ONLY) {
-        res.send({"reason": "image edition has been disabled"}, 403)
-        return;
+    if(!req.session.admin) {
+        res.send({reason: "login required"}, 401)
+        return
     }
 
     DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
@@ -200,6 +362,7 @@ app.post("/api/image/:uid", function(req, res) {
     })
 
 })
+
 app.get("/api/image/:uid", function(req, res) {
 
     DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
@@ -231,7 +394,7 @@ app.get("/api/image/:uid", function(req, res) {
                         height = 5 * width;
                     }
                 }
-                console.log(height)
+
                 logger.info("returning resized image with width="+width+", height="+height)
 
                 var format;
