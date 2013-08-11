@@ -8,17 +8,20 @@
 </head>
 <body>
     <div class="container">
-
         <div class="row">
 
-            <div class="span2 well">
-                <a href="#index">Images</a>
-                <br/>
-                <a href="#acl">Access Control</a>
-                <br/>
-                <a href="/logout">logout</a>
+            <div class="span2">
+                <div class="well">
+                    <a href="#index">Images</a>
+                    <br/>
+                    <a href="#acl">Access Control</a>
+                    <br/>
+                    <a href="/logout">logout</a>
+                </div>
             </div>
-            <div ng-view class="span10"></div>
+            <div class="span10">
+                <div ng-view></div>
+            </div>
 
         </div>
     </div>
