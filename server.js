@@ -37,6 +37,7 @@ app.use(express.bodyParser())
 //));
 
 app.get("/", function(req, res) {
+
     res.sendfile(__dirname + "/static/index.html")
 })
 
@@ -50,13 +51,6 @@ app.get("/admin", function(req, res) {
 
 app.get("/login", function(req, res) {
     res.sendfile(__dirname + "/static/login.html")
-})
-
-app.get("/admin/test", function(req, res) {
-    res.send({
-        admin: req.session.admin,
-        tags: req.session.tags
-    })
 })
 
 app.post("/login", function(req, res) {
@@ -101,32 +95,80 @@ app.get("/logout", function(req, res) {
 })
 
 
-app.get("/auth/:aclUid", function(req, res) {
-    var uid = req.param("aclUid")
-    if(uid) {
-        DBHelper.ACL.findByKey(
-            uid,
+function getAccessibleTags(request, callback) {
+
+    var aclUids = []
+
+    if(request.param("aclUid")) {
+        aclUids.push(request.param("aclUid"))
+    }
+
+    if(request.cookies.acls) {
+        for(var i = 0 ; i < request.cookies.acls ; i++) {
+            if(aclUids.indexOf(request.cookies.acls[i]) === -1) {
+                aclUids.push(request.cookies.acls[i])
+            }
+        }
+    }
+
+    if(aclUids.length > 0) {
+
+        DBHelper.ACL.find(
+            {uid: {"$in": aclUids}},
             {},
-            function(err, acl) {
+            function(err, acls) {
 
                 if(err) {
                     logger.error(err)
-                    res.send(err, 400)
-                } else if(acl) {
-
-                    logger.info("Authenticated with ACL ["+uid+"]. Access to tags ["+JSON.stringify(acl.tags)+"]")
-
-                    req.session.tags = acl.tags
-
-                    res.redirect("/")
+                    callback(err)
                 } else {
-                    logger.warn("Could not find requested ACL ["+uid+"]")
-                    res.redirect("/")
+
+                    var tags = []
+
+                    for(var i = 0 ; i < acls.length ; i++) {
+                        tags = tags.concat(acls[i].tags)
+                    }
+
+                    if(tags.indexOf("Public") === -1) {
+                        tags.push("Public")
+                    }
+
+//                    logger.info("Authenticated with ACL ["+uid+"]. Access to tags ["+JSON.stringify(acl.tags)+"]")
+                    callback(undefined, tags)
+//                    req.session.tags = acl.tags
                 }
 
             }
         )
+
+    } else {
+
+        setImmediate(function() {
+            callback(undefined, ["Public"])
+        })
+
     }
+}
+
+app.get("/auth/:aclUid", function(req, res) {
+
+    if(req.cookies.acls) {
+        res.cookie("acls", req.cookies.acls.concat(req.param("aclUid")))
+    }
+
+    getAccessibleTags(req, function(err, tags) {
+
+        if(err) {
+            logger.error(err)
+            res.send(err, 400)
+        } else {
+
+            logger.info("Authenticated with ACL ["+uid+"]. Access to tags ["+JSON.stringify(acl.tags)+"]")
+
+            req.session.tags = tags
+            res.redirect("/")
+        }
+    })
 })
 
 app.post("/api/acl", function(req, res) {
@@ -157,6 +199,10 @@ app.post("/api/acl", function(req, res) {
 
 
 app.get("/api/acl/list", function(req, res) {
+
+    if(!req.session.admin) {
+        return res.send({reason: "login required"}, 401)
+    }
 
     var from = req.param("from")
     var to = req.param("to")
@@ -248,6 +294,14 @@ app.get("/api/count/:tag", function(req, res) {
 })
 
 app.get("/api/list/:tag/:from/:to", function(req, res) {
+
+//    if(!req.session.tags) {
+//        if(req.cookies.acls) {
+//
+//        }
+//        res.cookie('rememberme', ["",""], { expires: new Date(Date.now() + 900000), httpOnly: true });
+//    }
+
 
     var tag = req.param("tag")
     var from = req.param("from")

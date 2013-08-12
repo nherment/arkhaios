@@ -1,0 +1,54 @@
+{
+    "title": "Arkhaios documentation",
+    "prettify": "tomorrow",
+    "theme": "beauty",
+    "favicon": "",
+    "footer": "Copyright 2013 Nicolas Herment",
+    "outputDir": "docs_out",
+    "assets": [
+        "assets"
+    ],
+    "sections": [
+        {
+            "title": "Introduction"
+        },
+        {
+            "title": "Installation"
+        },
+        {
+            "title": "License"
+        }
+    ],
+    "pages": [
+        {
+            "section": "Introduction",
+            "title": "Readme",
+            "path": "../README.md"
+        },
+        {
+            "section": "Introduction",
+            "title": "Todo",
+            "path": "Todo.md"
+        },
+        {
+            "section": "Installation",
+            "title": "First steps",
+            "path": "Installation.md"
+        },
+        {
+            "section": "Installation",
+            "title": "Options",
+            "path": "Options.md"
+        },
+        {
+            "section": "Installation",
+            "title": "Troubleshooting",
+            "path": "Troubleshooting.md"
+        },
+        {
+            "section": "License",
+            "title": "MIT License",
+            "path": "../LICENSE.md"
+        }
+    ]
+}

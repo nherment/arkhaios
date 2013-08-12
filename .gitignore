@@ -2,3 +2,6 @@
 /node_modules/
 /uploads/
 .DS_Store
+
+/deploy-demo.sh
+/docs/docs_out/

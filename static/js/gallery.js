@@ -87,7 +87,7 @@ $(document).ready(function() {
 function Gallery() {
 
     // initial height - effectively the maximum height +/- 10%;
-    var h = 220;
+    var h = parseInt($(window).height() / 2);
     // margin width
     var border = 5;
 
