@@ -17,3 +17,4 @@ Unordered list of things on my plate.
 - javascript edition of pictures (no full page refresh)
 - tags autocomplete
 - add tags on image upload
+- use Redis as memory store
