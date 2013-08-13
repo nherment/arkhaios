@@ -7,6 +7,8 @@ var gm              = require("gm")
 var im              = require("imagemagick")
 var SerialRunner    = require("serial").SerialRunner
 var uuid            = require("uuid")
+var crypto          = require("crypto")
+var AclHandler      = require("./lib/auth/AclHandler.js")
 //var passport        = require('passport')
 //var LocalStrategy   = require('passport-local').Strategy;
 
@@ -19,22 +21,7 @@ app.use(express.cookieParser("Arkhaios photography is gr34t"))
 //app.use(express.cookieSession({secret: "Arkhaios photography is gr34t"}))
 app.use(express.session({secret: "Arkhaios photography is gr34t"}))
 app.use(express.bodyParser())
-
-
-//passport.use(new LocalStrategy(
-//    function(username, password, done) {
-//        DB.Config.findOne({ key: "admin" }, function(err, adminUser) {
-//            if (err) { return done(err); }
-//            if (!adminUser) {
-//                return done(null, false, { message: 'No admin account. Populate the DataBase' });
-//            }
-//            if (!user.validPassword(password)) {
-//                return done(null, false, { message: 'Incorrect password.' });
-//            }
-//            return done(null, user);
-//        });
-//    }
-//));
+app.use(AclHandler.middleware())
 
 app.get("/", function(req, res) {
 
@@ -56,6 +43,8 @@ app.get("/login", function(req, res) {
 app.post("/login", function(req, res) {
 
     var password = req.param("password")
+
+    password = hash(password)
 
     DBHelper.Config.findByKey("admin", {}, function(err, admin) {
         if(err) {
@@ -82,6 +71,7 @@ app.post("/login", function(req, res) {
                     res.send(err, 400)
                 } else {
                     logger.info("First login. Administrator password created")
+                    req.session.admin = true
                     res.redirect("/admin")
                 }
             })
@@ -89,66 +79,18 @@ app.post("/login", function(req, res) {
     })
 })
 
+function hash(string) {
+    var sha512 = crypto.createHash("sha512")
+    sha512.update(string, "utf8")
+    return sha512.digest("base64")
+}
+
 app.get("/logout", function(req, res) {
     req.session.destroy()
     res.redirect("/")
 })
 
 
-function getAccessibleTags(request, callback) {
-
-    var aclUids = []
-
-    if(request.param("aclUid")) {
-        aclUids.push(request.param("aclUid"))
-    }
-
-    if(request.cookies.acls) {
-        for(var i = 0 ; i < request.cookies.acls ; i++) {
-            if(aclUids.indexOf(request.cookies.acls[i]) === -1) {
-                aclUids.push(request.cookies.acls[i])
-            }
-        }
-    }
-
-    if(aclUids.length > 0) {
-
-        DBHelper.ACL.find(
-            {uid: {"$in": aclUids}},
-            {},
-            function(err, acls) {
-
-                if(err) {
-                    logger.error(err)
-                    callback(err)
-                } else {
-
-                    var tags = []
-
-                    for(var i = 0 ; i < acls.length ; i++) {
-                        tags = tags.concat(acls[i].tags)
-                    }
-
-                    if(tags.indexOf("Public") === -1) {
-                        tags.push("Public")
-                    }
-
-//                    logger.info("Authenticated with ACL ["+uid+"]. Access to tags ["+JSON.stringify(acl.tags)+"]")
-                    callback(undefined, tags)
-//                    req.session.tags = acl.tags
-                }
-
-            }
-        )
-
-    } else {
-
-        setImmediate(function() {
-            callback(undefined, ["Public"])
-        })
-
-    }
-}
 
 app.get("/auth/:aclUid", function(req, res) {
 
@@ -156,16 +98,16 @@ app.get("/auth/:aclUid", function(req, res) {
         res.cookie("acls", req.cookies.acls.concat(req.param("aclUid")))
     }
 
-    getAccessibleTags(req, function(err, tags) {
+    AclHandler.populateSessionWithAccessibleTags(req, function(err) {
 
         if(err) {
+
             logger.error(err)
             res.send(err, 400)
+
         } else {
 
-            logger.info("Authenticated with ACL ["+uid+"]. Access to tags ["+JSON.stringify(acl.tags)+"]")
-
-            req.session.tags = tags
+            logger.info("Authenticated with ACL ["+req.param("aclUid")+"]. Access to tags ["+JSON.stringify(req.session.tags)+"]")
             res.redirect("/")
         }
     })
@@ -240,13 +182,15 @@ app.post("/api/upload", function(req, res) {
         return
     }
 
+    logger.info("Received upload: "+JSON.stringify(req.files))
+
     if(req.files) {
-        if(_.isArray(req.files.images)) {
+        if(_.isArray(req.files.file)) {
             var r = new SerialRunner()
 
-            for(var i = 0  ; i < req.files.images.length ; i++) {
+            for(var i = 0  ; i < req.files.file.length ; i++) {
 
-                r.add(uploadManager.upload, req.files.images[i])
+                r.add(uploadManager.upload, req.files.file[i])
 
             }
 
@@ -265,7 +209,7 @@ app.post("/api/upload", function(req, res) {
             })
 
         } else {
-            uploadManager.upload(req.files.images, function(err, imageInfo) {
+            uploadManager.upload(req.files.file, function(err, imageInfo) {
                 if(err) {
                     logger.error(err)
                     res.send(err, 400)
@@ -277,6 +221,7 @@ app.post("/api/upload", function(req, res) {
         }
     } else {
 
+        logger.error("Could not find files to upload in the http request")
         res.send({ "reason": "missing files to upload" }, 400)
 
     }
@@ -284,7 +229,14 @@ app.post("/api/upload", function(req, res) {
 })
 
 app.get("/api/count/:tag", function(req, res) {
-    DBHelper.Image.count({}, {}, function(err, count) {
+
+    var query = {tags: {"$in": req.session.tags}}
+
+    if(req.session.admin) {
+        query = {}
+    }
+
+    DBHelper.Image.count(query, {}, function(err, count) {
         if(err) {
             res.send(err, 500)
         } else {
@@ -303,42 +255,32 @@ app.get("/api/list/:tag/:from/:to", function(req, res) {
 //    }
 
 
-    var tag = req.param("tag")
-    var from = req.param("from")
     var to = req.param("to")
+    var from = req.param("from")
 
-    var accessibleTags = req.session.tags;
 
-    if(!accessibleTags) {
-        accessibleTags = []
-    }
+    var query = {tags: {"$in": req.session.tags}}
 
-    if(accessibleTags.indexOf("Public") === -1) {
-        accessibleTags.push("Public")
-    }
-
-    var query = {tags: {"$in": accessibleTags}}
-
-    if(req.session.admin) { // admin has access to everything
+    if(req.session.admin) {
         query = {}
     }
 
     DBHelper.Image.find(
-        query,
-        {
-            _id: 0,
-            uid: 1,
-            name: 1,
-            width: 1,
-            height: 1,
-            tags: 1,
-            "dateUploaded": 1
-        },
-        {
-            sort:   [["dateUploaded", "desc"]],
-            limit:  (to-from),
-            skip:   from
-        },
+    query,
+    {
+        _id: 0,
+        uid: 1,
+        name: 1,
+        width: 1,
+        height: 1,
+        tags: 1,
+        "dateUploaded": 1
+    },
+    {
+        sort:   [["dateUploaded", "desc"]],
+        limit:  (to-from),
+        skip:   from
+    },
         function(err, imagesInfos) {
 
             if(err) {
@@ -353,6 +295,8 @@ app.get("/api/list/:tag/:from/:to", function(req, res) {
 })
 
 app.get("/api/info/:uid", function(req, res) {
+
+    // TODO: add ACL check
 
     DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
         if(err) {
@@ -417,7 +361,25 @@ app.post("/api/image/:uid", function(req, res) {
 
 })
 
+function tagsMatch(tags1, tags2) {
+
+    var match = false
+
+    if(tags1 && tags2) {
+        for(var i = 0 ; i < tags1.length ; i++) {
+            if(tags2.indexOf(tags1[i]) !== -1) {
+                match = true
+                break
+            }
+        }
+    }
+
+    return match
+}
+
 app.get("/api/image/:uid", function(req, res) {
+
+    // TODO: ACL check
 
     DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
         if(err) {
@@ -427,10 +389,12 @@ app.get("/api/image/:uid", function(req, res) {
             var fs = require("fs")
             logger.info("Found image at path ["+imageInfo.path+"]")
 
+            if(!req.session.admin && !tagsMatch(req.session.tags, imageInfo.tags)) {
+                return res.send({"reason": "You are not authorized to see this image"}, 403)
+            }
+
             var width = req.param("width")
             var height = req.param("height")
-
-//            console.log("width=" + width + ", height=" + height)
 
             if(width || height) {
 

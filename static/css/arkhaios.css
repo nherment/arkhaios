@@ -61,3 +61,7 @@ li {
 li:hover {
     background: #eee;
 }
+
+.tagsinput {
+    display: inline-block;
+}

@@ -27,23 +27,28 @@
         },
         {
             "section": "Introduction",
+            "title": "Usage",
+            "path": "introduction/Usage.md"
+        },
+        {
+            "section": "Introduction",
             "title": "Todo",
-            "path": "Todo.md"
+            "path": "introduction/Todo.md"
         },
         {
             "section": "Installation",
             "title": "First steps",
-            "path": "Installation.md"
+            "path": "installation/QuickInstall.md"
         },
         {
             "section": "Installation",
             "title": "Options",
-            "path": "Options.md"
+            "path": "installation/Options.md"
         },
         {
             "section": "Installation",
             "title": "Troubleshooting",
-            "path": "Troubleshooting.md"
+            "path": "installation/Troubleshooting.md"
         },
         {
             "section": "License",

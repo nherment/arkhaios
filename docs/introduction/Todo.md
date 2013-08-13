@@ -15,3 +15,5 @@ Unordered list of things on my plate.
 - in docs, explain how sharing works
 - batch edit of pictures
 - javascript edition of pictures (no full page refresh)
+- tags autocomplete
+- add tags on image upload

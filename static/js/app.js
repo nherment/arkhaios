@@ -7,6 +7,9 @@ var imageManagement = angular.module('imageManagement', [])
             templateUrl: 'js/partials/imageInfoList.html',
             controller: 'ListCtrl'
         })
+        .when('/upload', {
+            templateUrl: 'js/partials/imageUpload.html'
+        })
         .when('/acl', {
             templateUrl: 'js/partials/AccessControls.html',
             controller: 'AccessControlCtrl'

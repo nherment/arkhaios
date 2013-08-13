@@ -36,7 +36,7 @@ $(document).ready(function() {
             var from = (nextPage-1) * itemsPerPage;
             var to = from + itemsPerPage;
 
-            console.log("Loading from ["+from+"] to ["+to+"]")
+            //console.log("Loading from ["+from+"] to ["+to+"]")
 
             $.getJSON("/api/list/all/"+from+"/"+to, null, function(data, status) {
                 if(data && data.length > 0) {
@@ -127,7 +127,7 @@ function Gallery() {
 
         while(baseLine < photos.length) {
 
-            console.log(baseLine + ", "+photos.length)
+            //console.log(baseLine + ", "+photos.length)
 
             count++
 

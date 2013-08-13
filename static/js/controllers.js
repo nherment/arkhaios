@@ -2,7 +2,6 @@
 imageManagement.controller('ListCtrl',
     function AppCtrl ($scope, $routeParams, $http) {
         $scope.loading = true;
-//        $scope.imagesInfos = undefined;
 
         $http({method: 'GET', url: '/api/count/all'}).success(function(data, status, headers, config) {
 
@@ -13,9 +12,9 @@ imageManagement.controller('ListCtrl',
                 $scope.currentPage = 1;
             }
 
-            $scope.pageSize = 5;
+            $scope.pageSize = 10;
 
-            var from = ($scope.currentPage-1) * $scope.pageSize;
+            var from = ($scope.currentPage - 1) * $scope.pageSize;
             var to = from + $scope.pageSize;
 
             $scope.prevUrl = "#/index/" + ($scope.currentPage-1);
@@ -42,7 +41,6 @@ imageManagement.directive('tagsInput', function ($timeout) {
     return {
         restrict: 'C',
         link: function (scope, elem, attrs) {
-            console.log(scope.imageInfo)
 
             $timeout(function(){
                 elem.tagsInput({
@@ -57,6 +55,32 @@ imageManagement.directive('tagsInput', function ($timeout) {
     };
 });
 
+imageManagement.directive('imageUpdate', function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+
+            $timeout(function(){
+                elem.on("submit", function() {
+                    elem.submit();
+                    return false;
+                })
+            });
+        }
+    };
+});
+
+imageManagement.directive('imageUpload', function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+
+            $timeout(function(){
+                var myDropzone = new Dropzone("form", {});
+            });
+        }
+    };
+})
 
 
 imageManagement.controller('AccessControlCtrl',
