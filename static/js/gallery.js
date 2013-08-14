@@ -59,22 +59,6 @@ $(document).ready(function() {
         }
     }
 
-    function loadMore() {
-
-        loadNext(function() {
-            loadNext(function() {
-                loadNext(function() {
-                    loadNext(function() {
-                        loadNext(function() {
-                            loadNext()
-                        })
-                    })
-                })
-            })
-        })
-
-    }
-
     $(window).scroll(function() {
         if(endReached()) {
             loadNext();
