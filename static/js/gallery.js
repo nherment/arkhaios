@@ -66,7 +66,7 @@ $(document).ready(function() {
     });
 
     function endReached() {
-        return ($(window).scrollTop() + $(window).height() > $(document).height() - 50);
+        return ($(window).scrollTop() + $(window).height() > $(document).height() - 100);
     }
 
     loadNext();
@@ -167,11 +167,10 @@ function Gallery() {
 
                 // Create image, set src, width, height and margin
                 (function() {
-                    var photoUrl = "/api/image/" + photo.uid + "?width=" + wt + "&height="+ht;
-                    var img = $('<img/>', {class: "photo", src: photoUrl, width: wt, height: ht}).css("margin", border + "px");
-                    var url = "/api/image/" + photo.uid;
-                    img.click(function() { location.href = url; });
-                    //console.log("adding image to row #"+rowNum+" ["+photo.uid+"]")
+                    var thumbnailUrl = "/api/image/" + photo.uid + "?width=" + wt + "&height="+ht;
+                    var photoUrl = "/api/image/" + photo.uid;
+                    var img = $('<img/>', {class: "photo", src: thumbnailUrl, width: wt, height: ht}).css("margin", border + "px");
+                    img.click(function() { location.href = photoUrl; });
                     row.append(img);
                     img.load(function() {
                         imagesLoaded ++
