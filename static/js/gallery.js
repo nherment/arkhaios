@@ -43,8 +43,9 @@ $(document).ready(function() {
                     g.processPhotos(data, function() {
                         loading = false;
                         nextPage ++;
-                        if(cb) {
-                            cb();
+
+                        if(endReached()) {
+                            loadNext(cb);
                         }
                     });
                 }
@@ -75,10 +76,14 @@ $(document).ready(function() {
     }
 
     $(window).scroll(function() {
-        if($(window).scrollTop() + $(window).height() > $(document).height() - 50) {
+        if(endReached()) {
             loadNext();
         }
     });
+
+    function endReached() {
+        return ($(window).scrollTop() + $(window).height() > $(document).height() - 50);
+    }
 
     loadNext();
 
