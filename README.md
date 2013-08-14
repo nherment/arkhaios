@@ -19,7 +19,7 @@ http://docs.arkhaios.net
 Demo
 ----
 
-http://demo.arkhaios.net
+http://arkhaios.net
 
 
 

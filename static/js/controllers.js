@@ -110,7 +110,7 @@ imageManagement.controller('AccessControlCtrl',
             $scope.acls = data;
             if($scope.acls) {
                 for(var i = 0 ; i < $scope.acls.length ;i++) {
-                    $scope.acls[i].link = window.location.protocol + "//" + window.location.host + "/auth/"+$scope.acls[i].uid
+                    $scope.acls[i].link = window.location.protocol + "//" + window.location.host + "/?aclUid="+$scope.acls[i].uid
                 }
             }
             $scope.loading = false;

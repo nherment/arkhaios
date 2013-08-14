@@ -12,18 +12,6 @@ $(document).ready(function() {
         g.processPhotos(photoList);
     };
 
-
-
-    $(window).resize(function() {
-        var nowWidth = $("div#picstest").innerWidth();
-
-        // test to see if the window resize is big enough to deserve a reprocess
-        if( nowWidth * 1.1 < lastWidth || nowWidth * 0.9 > lastWidth ) {
-            // if so call method
-            resize();
-        }
-    });
-
     var loading = false;
 
     var nextPage = 1;
@@ -35,8 +23,6 @@ $(document).ready(function() {
 
             var from = (nextPage-1) * itemsPerPage;
             var to = from + itemsPerPage;
-
-            //console.log("Loading from ["+from+"] to ["+to+"]")
 
             $.getJSON("/api/list/all/"+from+"/"+to, null, function(data, status) {
                 if(data && data.length > 0) {

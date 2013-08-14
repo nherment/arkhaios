@@ -1,7 +1,7 @@
 {
     "name":             "arkhaios",
     "version":          "0.0.1",
-    "description":      "Website for managing a store, see the readme",
+    "description":      "the opinionated Node.js gallery",
     "main":             "server.js",
     "scripts": {
         "test":         "mocha"
@@ -12,9 +12,9 @@
         "express":      "",
         "mongodb":      "",
         "serial":       "",
-        "imagemagick":  ""
+        "gm":           ""
     },
-    "repository":       "",
+    "repository":       "https://github.com/nherment/arkhaios",
     "author":           "Nicolas Herment <nherment@gmail.com>",
     "license":          "MIT License"
 }

@@ -24,8 +24,7 @@ app.use(express.bodyParser())
 app.use(AclHandler.middleware())
 
 app.get("/", function(req, res) {
-
-    res.sendfile(__dirname + "/static/index.html")
+    res.sendfile(__dirname + "/static/index2.html")
 })
 
 app.get("/admin", function(req, res) {
@@ -491,9 +490,22 @@ app.get("/api/image/:uid", function(req, res) {
                     customArgs: []
                 }
 
-                im.resize(resizeOptions, function(err, stdout, stderr) {
-                    res.contentType("image/jpeg");
-                    res.end(stdout, 'binary');
+                var gm = require("gm")
+
+                var stream = gm(imageInfo.path).resize(width, height).stream();
+
+                res.contentType(imageInfo.type);
+
+                stream.on("data", function(data) {
+                    res.write(data)
+                })
+
+                stream.on("end", function(data) {
+                    res.end();
+                })
+
+                stream.on("error", function() {
+                    res.send({reason: "unknown error while resizing the image"}, 500);
                 })
 
             } else {
