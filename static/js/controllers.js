@@ -62,7 +62,6 @@ imageManagement.directive('imageUpdate', function ($timeout) {
 
             $timeout(function() {
 
-
                 elem.on("submit", function() {
 
                     var originalBtnValue = elem.find(".btn").val();
