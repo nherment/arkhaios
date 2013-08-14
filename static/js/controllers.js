@@ -60,9 +60,28 @@ imageManagement.directive('imageUpdate', function ($timeout) {
         restrict: 'A',
         link: function (scope, elem, attrs) {
 
-            $timeout(function(){
+            $timeout(function() {
+
+
                 elem.on("submit", function() {
-                    elem.submit();
+
+                    elem.find(".btn").val("Saving...")
+                    elem.find(".btn").attr('disabled','disabled');
+
+                    $.ajax({
+                        type: "POST",
+                        url: elem.attr("action"),
+                        data: elem.serialize(),
+
+                        success: function(html)
+                        {
+                            elem.find(".btn").val("Save")
+                            elem.find(".btn").removeAttr("disabled")
+                        },
+                        error: function() {
+                            window.location.reload()
+                        }
+                    });
                     return false;
                 })
             });
