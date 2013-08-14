@@ -47,7 +47,7 @@ imageManagement.directive('tagsInput', function ($timeout) {
                     height: 60,
                     width: 300
                 });
-                if(scope.imageInfo.tags) {
+                if(scope.imageInfo && scope.imageInfo.tags) {
                     elem.importTags(scope.imageInfo.tags.join(","));
                 }
             });
@@ -65,6 +65,7 @@ imageManagement.directive('imageUpdate', function ($timeout) {
 
                 elem.on("submit", function() {
 
+                    var originalBtnValue = elem.find(".btn").val();
                     elem.find(".btn").val("Saving...")
                     elem.find(".btn").attr('disabled','disabled');
 
@@ -75,7 +76,7 @@ imageManagement.directive('imageUpdate', function ($timeout) {
 
                         success: function(html)
                         {
-                            elem.find(".btn").val("Save")
+                            elem.find(".btn").val(originalBtnValue)
                             elem.find(".btn").removeAttr("disabled")
                         },
                         error: function() {
@@ -114,3 +115,40 @@ imageManagement.controller('AccessControlCtrl',
 
     }
 )
+
+
+imageManagement.directive('aclUpdate', function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+
+            $timeout(function() {
+
+
+                elem.on("submit", function() {
+
+                    var originalBtnValue = elem.find(".btn").val();
+
+                    elem.find(".btn").val("Saving...");
+                    elem.find(".btn").attr('disabled','disabled');
+
+                    $.ajax({
+                        type: "POST",
+                        url: elem.attr("action"),
+                        data: elem.serialize(),
+
+                        success: function(html)
+                        {
+                            elem.find(".btn").val(originalBtnValue);
+                            elem.find(".btn").removeAttr("disabled");
+                        },
+                        error: function() {
+                            window.location.reload();
+                        }
+                    });
+                    return false;
+                })
+            });
+        }
+    };
+});

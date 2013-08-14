@@ -115,8 +115,8 @@ app.get("/auth/:aclUid", function(req, res) {
 
 app.post("/api/acl", function(req, res) {
 
-    if(process.env.ARKHAIOS_READ_ONLY) {
-        res.send({"reason": "Creating a new ACL has been disabled"}, 403)
+    if(!req.session.admin) {
+        res.send({reason: "login required"}, 401)
         return
     }
 
@@ -135,6 +135,55 @@ app.post("/api/acl", function(req, res) {
             res.redirect("/admin")
         }
 
+    })
+
+})
+app.post("/api/acl/:uid", function(req, res) {
+
+    if(!req.session.admin) {
+        res.send({reason: "login required"}, 401)
+        return
+    }
+
+    DBHelper.ACL.findByKey(req.param("uid"), {}, function(err, acl) {
+        if(err) {
+            logger.error(err)
+            res.send(err, 400)
+        } else if(acl) {
+            var hasChanged = false;
+
+            for(var attr in req.body) {
+                switch(attr) {
+                    case "uid":
+                        logger.warn("Attempt to change the UID of the acl is refused");
+                        break;
+                    case "tags":
+                        req.body[attr] = req.body[attr].split(",");
+                    default:
+                        if(!_.isEqual(acl[attr], req.body[attr])) {
+                            acl[attr] = req.body[attr];
+                            hasChanged = true;
+                        }
+                        break;
+                }
+            }
+
+            if(hasChanged) {
+                DBHelper.ACL.save(acl, function(err, updatedAcl) {
+                    if(err) {
+                        logger.error(err)
+                        res.send(err, 400)
+                    } else {
+                        res.redirect("/admin")
+                    }
+                })
+            } else {
+                res.redirect("/admin")
+            }
+        } else {
+            // TODO log error
+            res.redirect("/admin")
+        }
     })
 
 })
@@ -378,8 +427,6 @@ function tagsMatch(tags1, tags2) {
 }
 
 app.get("/api/image/:uid", function(req, res) {
-
-    // TODO: ACL check
 
     DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
         if(err) {

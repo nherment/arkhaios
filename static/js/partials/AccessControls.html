@@ -17,7 +17,7 @@
                 <p>http://localhost:3000/auth/{{acl.uid}}</p>
             </div>
             <div>
-                <form action="/api/acl/{{acl.uid}}" method="post">
+                <form action="/api/acl/{{acl.uid}}" method="post" acl-update>
                     <input tags-input class="tagsInput" name="tags" id="tags_{{acl.uid}}" value="{{acl.tags.join(',')}}" />
                     <input type="submit" value="save" class="btn" style="display:inline" />
                 </form>
