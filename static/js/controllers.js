@@ -107,9 +107,14 @@ imageManagement.controller('AccessControlCtrl',
         $scope.loading = true;
 
         $http({method: 'GET', url: '/api/acl/list'}).success(function(data, status, headers, config) {
-                $scope.acls = data;
-                $scope.loading = false;
-                $scope.$broadcast('dataLoaded');
+            $scope.acls = data;
+            if($scope.acls) {
+                for(var i = 0 ; i < $scope.acls.length ;i++) {
+                    $scope.acls[i].link = window.location.protocol + "//" + window.location.host + "/auth/"+$scope.acls[i].uid
+                }
+            }
+            $scope.loading = false;
+            $scope.$broadcast('dataLoaded');
         })
 
     }

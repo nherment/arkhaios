@@ -14,7 +14,7 @@
         <li ng-repeat="acl in acls" ng-cloak>
             <div>
                 <h3>{{acl.name}}</h3>
-                <p>http://localhost:3000/auth/{{acl.uid}}</p>
+                <p>{{acl.link}}</p>
             </div>
             <div>
                 <form action="/api/acl/{{acl.uid}}" method="post" acl-update>
