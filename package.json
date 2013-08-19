@@ -1,20 +1,22 @@
 {
-    "name":             "arkhaios",
-    "version":          "0.0.1",
-    "description":      "the opinionated Node.js gallery",
-    "main":             "server.js",
+    "name":                 "arkhaios",
+    "version":              "0.0.1",
+    "description":          "the opinionated Node.js gallery",
+    "main":                 "server.js",
     "scripts": {
-        "test":         "mocha"
+        "test":             "mocha"
     },
     "dependencies": {
-        "wrench":       "",
-        "moment":       "",
-        "express":      "",
-        "mongodb":      "",
-        "serial":       "",
-        "gm":           ""
+        "dustjs-linkedin"   : "2.0.2",
+        "wrench"            : "",
+        "moment"            : "",
+        "express"           : "",
+        "mongodb"           : "1.3.15",
+        "serial"            : "0.0.6",
+        "gm"                : "",
+        "ga"                : "0.0.2"
     },
-    "repository":       "https://github.com/nherment/arkhaios",
-    "author":           "Nicolas Herment <nherment@gmail.com>",
-    "license":          "MIT License"
+    "repository":           "https://github.com/nherment/arkhaios",
+    "author":               "Nicolas Herment <nherment@gmail.com>",
+    "license":              "MIT License"
 }

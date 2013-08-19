@@ -4,13 +4,17 @@ var UploadManager   = require("./lib/files/UploadManager.js")
 var logger          = require("./lib/util/Logger.js")
 var DBHelper        = require("./lib/db/DBHelper.js").DBHelper
 var gm              = require("gm")
+var fs              = require("fs")
 var im              = require("imagemagick")
 var SerialRunner    = require("serial").SerialRunner
 var uuid            = require("uuid")
 var crypto          = require("crypto")
 var AclHandler      = require("./lib/auth/AclHandler.js")
+var dust            = require("dustjs-linkedin")
+var Analytics       = require("./lib/web/Analytics.js")
 //var passport        = require('passport')
 //var LocalStrategy   = require('passport-local').Strategy;
+
 
 var uploadManager = new UploadManager()
 
@@ -23,8 +27,38 @@ app.use(express.session({secret: "Arkhaios photography is gr34t"}))
 app.use(express.bodyParser())
 app.use(AclHandler.middleware())
 
+
+var compiledIndexPage
+
 app.get("/", function(req, res) {
-    res.sendfile(__dirname + "/static/index2.html")
+
+    // TODO: cache index in prod VS no cache in dev
+
+    if(!compiledIndexPage) {
+        compiledIndexPage = dust.compile(fs.readFileSync(__dirname + "/static/index.dust", "utf8"), "index");
+        dust.loadSource(compiledIndexPage);
+    }
+
+    var data = {
+        title: process.env.ARKHAIOS_TITLE || "Arkhaios"
+    }
+
+    if(process.env.ARKHAIOS_GA_UA && process.env.ARKHAIOS_GA_HOST) {
+        data.googleAnalytics= {
+            UA: process.env.ARKHAIOS_GA_UA,
+            host: process.env.ARKHAIOS_GA_HOST
+        }
+    }
+
+    dust.render("index", data, function(err, rendered) {
+        if(err) {
+            logger.error(err)
+//            res.send({reason: err.message}, 500);
+        } else {
+//            res.contentType("text/html");
+            res.send(rendered);
+        }
+    });
 })
 
 app.get("/admin", function(req, res) {
@@ -36,6 +70,7 @@ app.get("/admin", function(req, res) {
 })
 
 app.get("/login", function(req, res) {
+    Analytics.trackPage("/login")
     res.sendfile(__dirname + "/static/login.html")
 })
 
@@ -85,6 +120,7 @@ function hash(string) {
 }
 
 app.get("/logout", function(req, res) {
+    Analytics.trackPage("/login")
     req.session.destroy()
     res.redirect("/")
 })
@@ -92,6 +128,8 @@ app.get("/logout", function(req, res) {
 
 
 app.get("/auth/:aclUid", function(req, res) {
+
+    Analytics.trackPage("/auth/"+req.param("aclUid"))
 
     if(req.cookies.acls) {
         res.cookie("acls", req.cookies.acls.concat(req.param("aclUid")))
@@ -360,7 +398,6 @@ app.get("/api/info/:uid", function(req, res) {
 })
 
 app.post("/api/image/:uid", function(req, res) {
-
     if(!req.session.admin) {
         res.send({reason: "login required"}, 401)
         return
@@ -426,6 +463,8 @@ function tagsMatch(tags1, tags2) {
 }
 
 app.get("/api/image/:uid", function(req, res) {
+
+    Analytics.trackPage("/api/image/"+req.param("uid"))
 
     DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
         if(err) {
