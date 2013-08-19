@@ -4,7 +4,10 @@ First Steps
 Install the application
 -----------------------
 
-Rune these commands to install arkhaios:
+Run these commands to install arkhaios (Mac OS):
+
+    brew install imagemagick
+    brew install graphicsmagick
 
     git clone git@github.com:nherment/arkhaios.git
 
