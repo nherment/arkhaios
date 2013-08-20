@@ -1,6 +1,6 @@
 {
     "name":                 "arkhaios",
-    "version":              "0.0.1",
+    "version":              "0.2.0",
     "description":          "the opinionated Node.js gallery",
     "main":                 "server.js",
     "scripts": {
@@ -18,5 +18,10 @@
     },
     "repository":           "https://github.com/nherment/arkhaios",
     "author":               "Nicolas Herment <nherment@gmail.com>",
-    "license":              "MIT License"
+    "license":              "MIT License",
+    "keywords": [
+        "gallery",
+        "photo",
+        "photographs"
+    ]
 }
