@@ -40,7 +40,8 @@ app.get("/", function(req, res) {
     }
 
     var data = {
-        title: process.env.ARKHAIOS_TITLE || "Arkhaios"
+        title: process.env.ARKHAIOS_TITLE || "Arkhaios",
+        forkMe: process.env.ARKHAIOS_FORK_ME
     }
 
     if(process.env.ARKHAIOS_GA_UA && process.env.ARKHAIOS_GA_HOST) {

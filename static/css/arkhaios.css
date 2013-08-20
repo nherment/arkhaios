@@ -18,10 +18,6 @@ a:hover {
     text-decoration: underline;
 }
 
-img {
-    background: url('../img/ajax-loader.gif') no-repeat;
-}
-
 div.picrow {
     border: 0px solid #000;
 }
@@ -31,7 +27,10 @@ div#picstest {
     width:100%;
 }
 
-img.photo { cursor: pointer; }
+img.photo {
+    cursor: pointer;
+    background: url('../img/ajax-loader.gif') no-repeat;
+}
 
 ul.images-edition {
     list-style-type: none;

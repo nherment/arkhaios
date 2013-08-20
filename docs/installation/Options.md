@@ -12,7 +12,11 @@ You can customize the port used by the webserver:
 
 Configuration:
 
-    echo ARKHAIOS_TITLE="My Website Title"  // website's title
+The following are environment variables that you can use to customize Arkhaios.
 
-    echo ARKHAIOS_GA_UA="UA-43216-1"        // Google Analytics UA
-    echo ARKHAIOS_GA_HOST="localhost"       // Google Analytics host name
+    export ARKHAIOS_TITLE="My Website Title"  // website's title
+
+    export ARKHAIOS_GA_UA="UA-43216-1"        // Google Analytics UA
+    export ARKHAIOS_GA_HOST="localhost"       // Google Analytics host name
+
+    export ARKHAIOS_FORK_ME="https://github.com/nherment/arkhaios" // fork me ribbon and it's URL
