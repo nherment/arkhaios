@@ -121,7 +121,7 @@ function hash(string) {
 }
 
 app.get("/logout", function(req, res) {
-    Analytics.trackPage("/login")
+    Analytics.trackPage("/logout")
     req.session.destroy()
     res.redirect("/")
 })
@@ -465,13 +465,14 @@ function tagsMatch(tags1, tags2) {
 
 app.get("/api/image/:uid", function(req, res) {
 
-    Analytics.trackPage("/api/image/"+req.param("uid"))
+//    Analytics.trackPage("/api/image/"+req.param("uid"))
 
     DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
         if(err) {
             logger.error(err)
             res.send(err, 400)
         } else if(imageInfo) {
+
             var fs = require("fs")
             logger.info("Found image at path ["+imageInfo.path+"]")
 
@@ -483,6 +484,13 @@ app.get("/api/image/:uid", function(req, res) {
             var height = req.param("height")
 
             if(width || height) {
+
+                Analytics.trackEvent({
+                    category: 'Image',
+                    action: 'small',
+                    label: imageInfo.name,
+                    value: req.param("uid")
+                })
 
                 if(!width) {
                     if(imageInfo.width) {
@@ -549,6 +557,14 @@ app.get("/api/image/:uid", function(req, res) {
                 })
 
             } else {
+
+                Analytics.trackEvent({
+                    category: 'Image',
+                    action: 'raw',
+                    label: imageInfo.name,
+                    value: req.param("uid")
+                })
+
                 res.setHeader("ContentType", "image/jpeg")
                 var readStream = fs.createReadStream(imageInfo.path);
                 readStream.pipe(res);
