@@ -22,7 +22,7 @@
     "pages": [
         {
             "section": "Introduction",
-            "title": "Readme",
+            "title": "Quick Start",
             "path": "../README.md"
         },
         {
@@ -34,11 +34,6 @@
             "section": "Introduction",
             "title": "Todo",
             "path": "introduction/Todo.md"
-        },
-        {
-            "section": "Installation",
-            "title": "First steps",
-            "path": "installation/QuickInstall.md"
         },
         {
             "section": "Installation",

@@ -20,7 +20,7 @@ Unordered list of things on my plate.
 Done
 ----
 
-x secure administration (seems there is a check missing in the uploads)
-x better upload
-x javascript edition of pictures (no full page refresh)
-x in docs, explain how sharing works
+- secure administration (seems there is a check missing in the uploads)
+- better upload
+- javascript edition of pictures (no full page refresh)
+- in docs, explain how sharing works
