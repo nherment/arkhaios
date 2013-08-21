@@ -20,8 +20,9 @@
     "author":               "Nicolas Herment <nherment@gmail.com>",
     "license":              "MIT License",
     "keywords": [
-        "gallery",
-        "photo",
-        "photographs"
+                            "gallery",
+                            "album",
+                            "photo",
+                            "photographs"
     ]
 }

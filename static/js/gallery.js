@@ -156,7 +156,15 @@ function Gallery() {
                     var thumbnailUrl = "/api/image/" + photo.uid + "?width=" + wt + "&height="+ht;
                     var photoUrl = "/api/image/" + photo.uid;
                     var img = $('<img/>', {class: "photo", src: thumbnailUrl, width: wt, height: ht}).css("margin", border + "px");
-                    img.click(function() { location.href = photoUrl; });
+
+                    var lightBox = createLightbox(photo);
+
+                    $("body").append(lightBox);
+
+                    img.click(function() {
+                        lightBox.show();
+                    });
+
                     row.append(img);
                     img.load(function() {
                         imagesLoaded ++
@@ -198,6 +206,40 @@ function Gallery() {
 
             baseLine += imagesCountInRow;
         }
+    }
+
+    function createLightbox(photo) {
+
+        var lightboxDiv = $('<div/>', {class: "lightbox"});
+        var topInfo = $('<div class="title">'+photo.name+'</div>');
+        var content = $('<div></div>');
+
+        var alreadyMadeVisible = false;
+
+        var img = $('<img/>', {src: "api/image/"+photo.uid, class: "photo"});
+
+        lightboxDiv.append('<p>click to close</p>');
+        lightboxDiv.append(topInfo);
+        lightboxDiv.append(content);
+
+        lightboxDiv.click(function(e) {
+            lightboxDiv.hide();
+        });
+        lightboxDiv.hide();
+
+        // lazy load of image when showing so that loading it is not blocking the display of the lightbox
+        var _show = lightboxDiv.show;
+        lightboxDiv.show = function() {
+            _show.apply(lightboxDiv);
+            if(!alreadyMadeVisible) {
+                alreadyMadeVisible = true;
+                setTimeout(function() {
+                    content.append(img);
+                }, 20)
+            }
+        }
+
+        return lightboxDiv;
     }
 }
 

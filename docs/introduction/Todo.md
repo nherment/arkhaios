@@ -15,6 +15,8 @@ Unordered list of things on my plate.
 - add tags on image upload
 - use Redis as memory store
 - automatically convert tiff to jpeg and work as an archiving mecanism
+- span multiple servers (either smart resolution of images file paths or shared storage bay or amazon S3...)
+- multi-tenancy
 
 
 Done
