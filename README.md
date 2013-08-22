@@ -46,5 +46,6 @@ Information
 
 * Sources https://github.com/nherment/arkhaios
 * Documentation: http://docs.arkhaios.net
+* Code Analysis: http://docs.arkhaios.net/report
 * Live Demo: http://arkhaios.net
 * License: MIT (see license file)
