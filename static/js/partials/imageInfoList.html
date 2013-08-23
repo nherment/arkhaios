@@ -15,7 +15,8 @@
                 <form action="/api/image/{{imageInfo.uid}}" method="post" class="form-inline" image-update>
                     <input type="text" name="name" value="{{imageInfo.name}}" class="input-small"/>
                     <input tags-input class="tagsInput" name="tags" id="tags_{{imageInfo.uid}}" value=""/>
-                    <input type="submit" value="save" class="btn input-small" />
+                    <input type="submit" value="save" class="btn" />
+                    <button class="btn btn-danger" image-delete>delete</button>
                 </form>
             </div>
         </li>

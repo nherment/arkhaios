@@ -93,9 +93,6 @@ function Gallery() {
 //            var row = divRows.eq(rowNum);
 //            row.empty();
 
-        var morePhotos = true;
-
-        var count = 0;
         var baseLine = 0;
 
         var imagesLoaded = 0;
@@ -103,8 +100,6 @@ function Gallery() {
         while(baseLine < photos.length) {
 
             //console.log(baseLine + ", "+photos.length)
-
-            count++
 
             var row = $('<div></div>', {class: "picrow"});
             placeHolder.append(row);
@@ -168,7 +163,6 @@ function Gallery() {
                     row.append(img);
                     img.load(function() {
                         imagesLoaded ++
-
                         if(imagesLoaded == photos.length) {
                             if(callback) {
                                 callback();
@@ -225,6 +219,7 @@ function Gallery() {
         lightboxDiv.click(function(e) {
             lightboxDiv.hide();
         });
+
         lightboxDiv.hide();
 
         // lazy load of image when showing so that loading it is not blocking the display of the lightbox

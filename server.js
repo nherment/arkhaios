@@ -463,6 +463,55 @@ function tagsMatch(tags1, tags2) {
     return match
 }
 
+app.delete("/api/image/:uid", function(req, res) {
+
+    if(!req.session.admin) {
+        res.send({reason: "login required"}, 401)
+        return
+    }
+
+    DBHelper.Image.findByKey(req.param("uid"), {}, function(err, imageInfo) {
+        if(err) {
+            logger.error(err)
+            res.send(err, 400)
+        } else if(imageInfo) {
+
+            var fs = require("fs")
+            logger.info("Found image at path ["+imageInfo.path+"]")
+
+            Analytics.trackEvent({
+                category: 'Image',
+                action: 'delete',
+                label: imageInfo.name,
+                value: req.param("uid")
+            })
+
+
+            logger.info("deleting image ["+imageInfo.uid+"]")
+            DBHelper.Image.remove({uid: imageInfo.uid}, function(err) {
+                if(err) {
+                    logger.error(err)
+                    res.send(err, 400)
+                } else {
+                    fs.unlink(imageInfo.path, function(err) {
+                        if(err) {
+                            logger.error(err)
+                            res.send(err, 400)
+                        } else {
+                            res.send(imageInfo)
+
+                            logger.info("deleted image ["+imageInfo.uid+"]")
+                        }
+                    })
+                }
+            })
+
+        } else {
+            res.send("Could not find image with UID ["+req.param("uid")+"]", 404)
+        }
+    })
+})
+
 app.get("/api/image/:uid", function(req, res) {
 
 //    Analytics.trackPage("/api/image/"+req.param("uid"))

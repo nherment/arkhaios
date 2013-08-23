@@ -64,9 +64,9 @@ imageManagement.directive('imageUpdate', function ($timeout) {
 
                 elem.on("submit", function() {
 
-                    var originalBtnValue = elem.find(".btn").val();
-                    elem.find(".btn").val("Saving...")
-                    elem.find(".btn").attr('disabled','disabled');
+                    var originalBtnValue = elem.find(".submit").val();
+                    elem.find(".submit").val("Saving...")
+                    elem.find(".submit").attr('disabled','disabled');
 
                     $.ajax({
                         type: "POST",
@@ -75,13 +75,47 @@ imageManagement.directive('imageUpdate', function ($timeout) {
 
                         success: function(html)
                         {
-                            elem.find(".btn").val(originalBtnValue)
-                            elem.find(".btn").removeAttr("disabled")
+                            elem.find(".submit").val(originalBtnValue)
+                            elem.find(".submit").removeAttr("disabled")
                         },
                         error: function() {
                             window.location.reload()
                         }
                     });
+                    return false;
+                })
+            });
+        }
+    };
+});
+imageManagement.directive('imageDelete', function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+
+            $timeout(function() {
+
+                elem.on("click", function() {
+
+                    var originalBtnValue = elem.text();
+//                    elem.val("Deleting...")
+//                    elem.attr('disabled','disabled');
+                    console.log("delete ["+scope.uid+"]")
+
+//                    $.ajax({
+//                        type: "POST",
+//                        url: elem.attr("action"),
+//                        data: elem.serialize(),
+//
+//                        success: function(html)
+//                        {
+//                            elem.find(".btn").val(originalBtnValue)
+//                            elem.find(".btn").removeAttr("disabled")
+//                        },
+//                        error: function() {
+//                            window.location.reload()
+//                        }
+//                    });
                     return false;
                 })
             });
