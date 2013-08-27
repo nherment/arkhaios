@@ -10,10 +10,7 @@
     ],
     "sections": [
         {
-            "title": "Introduction"
-        },
-        {
-            "title": "Installation"
+            "title": "Info"
         },
         {
             "title": "License"
@@ -21,33 +18,13 @@
     ],
     "pages": [
         {
-            "section": "Introduction",
-            "title": "Quick Start",
+            "section": "Info",
+            "title": "ReadMe",
             "path": "../README.md"
         },
         {
-            "section": "Introduction",
-            "title": "Usage",
-            "path": "introduction/Usage.md"
-        },
-        {
-            "section": "Introduction",
-            "title": "Todo",
-            "path": "introduction/Todo.md"
-        },
-        {
-            "section": "Installation",
-            "title": "Options",
-            "path": "installation/Options.md"
-        },
-        {
-            "section": "Installation",
-            "title": "Troubleshooting",
-            "path": "installation/Troubleshooting.md"
-        },
-        {
             "section": "License",
-            "title": "MIT License",
+            "title": "Open Source",
             "path": "../LICENSE.md"
         }
     ]
