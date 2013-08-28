@@ -6,6 +6,18 @@ var dust            = require("dustjs-linkedin")
 var Analytics       = require("./lib/web/Analytics.js")
 var RedisStore      = require("connect-redis")(express);
 
+var cluster         = require("cluster")
+
+if (cluster.isMaster) {
+
+    var cpuCount = require('os').cpus().length;
+
+    for (var i = 0; i < cpuCount; i += 1) {
+        cluster.fork();
+    }
+} else {
+
+
 require('express-namespace')
 
 var app = express()
@@ -26,6 +38,7 @@ if(redisConfig) {
     app.use(express.session({secret: "Arkhaios photography is gr34t"}))
 }
 app.use(express.bodyParser())
+app.use(express.logger())
 app.use(AclHandler.middleware())
 
 
@@ -105,3 +118,5 @@ var port = process.env.PORT || 3000
 app.listen(port, function() {
     logger.info("Listening on port "+port)
 })
+
+}

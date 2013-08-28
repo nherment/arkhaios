@@ -15,7 +15,7 @@ $(document).ready(function() {
     var loading = false;
 
     var nextPage = 1;
-    var itemsPerPage = 20;
+    var itemsPerPage = 17;
 
     function loadNext(cb) {
         if(!loading) {
@@ -30,9 +30,9 @@ $(document).ready(function() {
                         loading = false;
                         nextPage ++;
 
-                        if(endReached()) {
+//                        if(endReached()) {
                             loadNext(cb);
-                        }
+//                        }
                     });
                 }
             }).error(function() {
@@ -59,7 +59,46 @@ $(document).ready(function() {
 
 });
 
+function isElementInViewport(el) {
+    var rect = el[0].getBoundingClientRect();
+    return (
+       rect.top < (window.innerHeight * 2)
+    );
+}
+
+$.fn.lazyLoad = function(cb) {
+    if(this.attr("data-lazy-src")) {
+        this.attr("src", this.attr("data-lazy-src"));
+        this.load(function() {
+            if(cb) {
+                cb()
+            }
+        });
+    }
+};
+
 function Gallery() {
+
+    var imagesPendingLoad = [];
+
+    function lazilyLoadImages() {
+
+        var imagesToCheck = imagesPendingLoad;
+        imagesPendingLoad = [];
+
+        for(var i = 0 ; i < imagesToCheck.length ; i++) {
+            if(isElementInViewport(imagesToCheck[i])) {
+                imagesToCheck[i].lazyLoad();
+            } else {
+                imagesPendingLoad.push(imagesToCheck[i]);
+            }
+        }
+    }
+
+
+    $(window).scroll(function() {
+        lazilyLoadImages();
+    });
 
     // initial height - effectively the maximum height +/- 10%;
     var h = parseInt($(window).height() / 2);
@@ -150,25 +189,30 @@ function Gallery() {
                 (function() {
                     var thumbnailUrl = "/api/image/" + photo.uid + "?width=" + wt + "&height="+ht;
                     var photoUrl = "/api/image/" + photo.uid;
-                    var img = $('<img/>', {class: "photo", src: thumbnailUrl, width: wt, height: ht}).css("margin", border + "px");
+                    var img = $('<img/>', {class: "photo", title: photo.name, alt: photo.name, src:"", "data-lazy-src": thumbnailUrl, width: wt, height: ht}).css("margin", border + "px");
 
                     var lightBox = createLightbox(photo);
 
                     $("body").append(lightBox);
-
+                    img.thumbnailUrl = thumbnailUrl;
                     img.click(function() {
                         lightBox.show();
                     });
 
+                    imagesPendingLoad.push(img);
+
                     row.append(img);
-                    img.load(function() {
-                        imagesLoaded ++
-                        if(imagesLoaded == photos.length) {
-                            if(callback) {
-                                callback();
-                            }
+//                    img.load(function() {
+//                    })
+                    lazilyLoadImages()
+
+                    imagesLoaded ++;
+
+                    if(imagesLoaded == photos.length) {
+                        if(callback) {
+                            callback();
                         }
-                    })
+                    }
                 })();
             }
 
@@ -210,11 +254,13 @@ function Gallery() {
 
         var alreadyMadeVisible = false;
 
-        var img = $('<img/>', {src: "api/image/"+photo.uid, class: "photo"});
+//        var img = $('<img/>', {src: "api/image/"+photo.uid, class: "photo"});
 
         lightboxDiv.append('<p>click to close</p>');
         lightboxDiv.append(topInfo);
         lightboxDiv.append(content);
+
+        lightboxDiv.imgUid = photo.uid;
 
         lightboxDiv.click(function(e) {
             lightboxDiv.hide();
@@ -229,7 +275,7 @@ function Gallery() {
             if(!alreadyMadeVisible) {
                 alreadyMadeVisible = true;
                 setTimeout(function() {
-                    content.append(img);
+                    content.append($('<img/>', {src: "api/image/"+photo.uid, class: "photo"}));
                 }, 20)
             }
         }

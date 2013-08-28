@@ -29,7 +29,7 @@ div#picstest {
 
 img.photo {
     cursor: pointer;
-    background: url('../img/ajax-loader.gif') no-repeat center;
+    background: #cccccc no-repeat center;
 }
 
 ul.images-edition {
