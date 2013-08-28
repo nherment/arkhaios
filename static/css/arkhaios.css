@@ -30,6 +30,7 @@ div#picstest {
 img.photo {
     cursor: pointer;
     background: #cccccc no-repeat center;
+    display: inline-block;
 }
 
 ul.images-edition {
@@ -80,6 +81,13 @@ li:hover {
     height: 100%;
     background: rgba(255, 255, 255, 0.9);
     text-align: center;
+}
+
+.lightbox-content {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .lightbox .title {

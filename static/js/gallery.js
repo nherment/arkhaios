@@ -250,7 +250,7 @@ function Gallery() {
 
         var lightboxDiv = $('<div/>', {class: "lightbox"});
         var topInfo = $('<div class="title">'+photo.name+'</div>');
-        var content = $('<div></div>');
+        var content = $('<div></div>', {class: "lightbox-content"});
 
         var alreadyMadeVisible = false;
 
