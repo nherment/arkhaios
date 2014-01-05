@@ -1,3 +1,8 @@
+
+
+### Arkhaios development is stopped. The folks at [koken](http://koken.me/) have developped a very good photo gallery based on PHP.
+
+
 Arkhaios is an online photo gallery with infinite scrolling and granular sharing capabilities
 
 This is still work in progress (aka alpha version), administration is ugly and still hard to use but I'm getting there...
